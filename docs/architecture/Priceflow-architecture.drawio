@@ -1,0 +1,111 @@
+<mxfile host="app.diagrams.net" modified="2026-09-09T17:10:00.000Z" agent="ChatGPT" version="24.7.17" type="device">
+  <diagram id="priceflow-arch" name="Priceflow Architecture">
+    <mxGraphModel dx="1800" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="title" value="Priceflow System Architecture" style="text;html=1;align=center;verticalAlign=middle;fontSize=28;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="450" y="20" width="850" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="subtitle" value="Event-Driven Microservices for Cost Management" style="text;html=1;align=center;verticalAlign=middle;fontSize=16" vertex="1" parent="1">
+          <mxGeometry x="500" y="65" width="750" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="clientLayer" value="Client Layer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=16" vertex="1" parent="1">
+          <mxGeometry x="30" y="130" width="170" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="clientsBox" value="Web UI (Future)&#xa;API Client (Postman / cURL)&#xa;Users (Vendor / Buyer / Approver)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef5ff;strokeColor=#6c8ebf;fontSize=15" vertex="1" parent="1">
+          <mxGeometry x="230" y="120" width="930" height="130" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="apiLayer" value="API Layer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=16" vertex="1" parent="1">
+          <mxGeometry x="30" y="280" width="170" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="gateway" value="API Gateway (Future)&#xa;(Spring Cloud Gateway / NGINX)&#xa;Routing, Authentication, Rate Limiting" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e9f7e8;strokeColor=#82b366;fontStyle=1;fontSize=16" vertex="1" parent="1">
+          <mxGeometry x="230" y="275" width="930" height="110" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="microLayer" value="Microservices Layer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=16" vertex="1" parent="1">
+          <mxGeometry x="30" y="420" width="170" height="230" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="costService" value="Cost Request Service&#xa;&#xa;• Create / Update Request&#xa;• Validation &amp; Workflow&#xa;• Approval / Rejection&#xa;• Publish Kafka Events&#xa;&#xa;Port: 8081" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef5ff;strokeColor=#3c78d8;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="230" y="420" width="210" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="productService" value="Product Service&#xa;&#xa;• Product Catalog&#xa;• Vendor Information&#xa;• Product Search&#xa;• Reference Data&#xa;&#xa;Port: 8082" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#8e44ad;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="470" y="420" width="210" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="pricingService" value="Pricing Service&#xa;&#xa;• Consume Approval Events&#xa;• Update Product Costs&#xa;• Cost History&#xa;• Effective Dating&#xa;&#xa;Port: 8083" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="710" y="420" width="210" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="notificationService" value="Notification Service&#xa;&#xa;• Consume Events&#xa;• Email Notifications&#xa;• HTML Templates (Thymeleaf)&#xa;• Configurable Test Email&#xa;&#xa;Port: 8084" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6ea;strokeColor=#d9534f;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="950" y="420" width="210" height="220" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="eventLayer" value="Event Streaming Layer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=16" vertex="1" parent="1">
+          <mxGeometry x="30" y="690" width="170" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="kafka" value="Apache Kafka (Event Bus)&#xa;&#xa;Topics:&#xa;priceflow.cost-request.submitted&#xa;priceflow.cost-request.approved&#xa;priceflow.cost-request.rejected&#xa;priceflow.price.updated" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f4e9f7;strokeColor=#9673a6;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="230" y="675" width="930" height="150" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dataLayer" value="Data Layer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=16" vertex="1" parent="1">
+          <mxGeometry x="30" y="860" width="170" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="costDb" value="PostgreSQL&#xa;(Cost Request DB)&#xa;&#xa;• cost_requests&#xa;• approval_history&#xa;• audit_logs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef5ff;strokeColor=#3c78d8;fontSize=14" vertex="1" parent="1">
+          <mxGeometry x="250" y="860" width="240" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="productDb" value="MongoDB&#xa;(Product DB)&#xa;&#xa;• products&#xa;• vendors&#xa;• catalog_data" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e9f7e8;strokeColor=#82b366;fontSize=14" vertex="1" parent="1">
+          <mxGeometry x="565" y="860" width="240" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="pricingDb" value="PostgreSQL&#xa;(Pricing DB)&#xa;&#xa;• product_costs&#xa;• cost_history&#xa;• effective_dates" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef5ff;strokeColor=#3c78d8;fontSize=14" vertex="1" parent="1">
+          <mxGeometry x="880" y="860" width="240" height="150" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="externalGroup" value="External Services" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#999999;fontStyle=1;fontSize=16" vertex="1" parent="1">
+          <mxGeometry x="1200" y="260" width="340" height="230" as="geometry"/>
+        </mxCell>
+        <mxCell id="emailProvider" value="Email Provider (Gmail SMTP)&#xa;&#xa;• Send Test Emails&#xa;• Recipient Configured in YAML&#xa;• HTML Email Templates" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef5ff;strokeColor=#6c8ebf;fontSize=14" vertex="1" parent="1">
+          <mxGeometry x="1240" y="320" width="260" height="130" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="devGroup" value="Development Tools" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#999999;fontStyle=1;fontSize=16" vertex="1" parent="1">
+          <mxGeometry x="1200" y="530" width="340" height="290" as="geometry"/>
+        </mxCell>
+        <mxCell id="devTools" value="IntelliJ IDEA (Java 21)&#xa;&#xa;Docker Desktop&#xa;&#xa;Kafka UI (Future)&#xa;&#xa;GitHub / GitHub CLI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#b3b3b3;fontSize=14" vertex="1" parent="1">
+          <mxGeometry x="1240" y="590" width="260" height="180" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="deployGroup" value="Deployment (Future)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#b3b3b3;fontStyle=1;fontSize=16" vertex="1" parent="1">
+          <mxGeometry x="30" y="1050" width="870" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="deployText" value="Docker Compose (Local)   →   Kubernetes (Cloud)   →   GitHub Actions (CI/CD)   →   AWS / GCP / Azure" style="text;html=1;align=center;verticalAlign=middle;fontSize=15" vertex="1" parent="1">
+          <mxGeometry x="80" y="1090" width="770" height="40" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="obsGroup" value="Observability (Future)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#9673a6;fontStyle=1;fontSize=16" vertex="1" parent="1">
+          <mxGeometry x="930" y="1050" width="610" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="obsText" value="Prometheus / Grafana   •   ELK / OpenSearch   •   New Relic" style="text;html=1;align=center;verticalAlign=middle;fontSize=15" vertex="1" parent="1">
+          <mxGeometry x="980" y="1090" width="510" height="40" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1" edge="1" parent="1" source="clientsBox" target="gateway"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1" edge="1" parent="1" source="gateway" target="costService"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1" edge="1" parent="1" source="gateway" target="productService"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1" edge="1" parent="1" source="gateway" target="pricingService"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1" edge="1" parent="1" source="gateway" target="notificationService"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="e6" value="Publish events" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;fontSize=12" edge="1" parent="1" source="costService" target="kafka"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e7" value="Consume events" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;fontSize=12" edge="1" parent="1" source="kafka" target="pricingService"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e8" value="Consume events" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;fontSize=12" edge="1" parent="1" source="kafka" target="notificationService"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1" edge="1" parent="1" source="costService" target="costDb"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1" edge="1" parent="1" source="productService" target="productDb"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1" edge="1" parent="1" source="pricingService" target="pricingDb"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1" edge="1" parent="1" source="notificationService" target="emailProvider"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

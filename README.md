@@ -2,6 +2,14 @@
 
 Priceflow is a production-style event-driven pricing and vendor cost management platform built as a personal portfolio project.
 
+## System Architecture
+
+Priceflow follows an event-driven microservices architecture for managing vendor cost requests, product data, pricing updates, and notifications.
+
+![Priceflow System Architecture](docs/architecture/Priceflow-architecture.png)
+
+> The editable architecture diagram is available at [`docs/architecture/Priceflow-architecture.drawio`](docs/architecture/Priceflow-architecture.drawio).
+
 ## Technology Stack
 
 - Java 21
