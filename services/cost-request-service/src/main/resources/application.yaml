@@ -1,3 +1,14 @@
 spring:
   application:
     name: cost-request-service
+
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/priceflow_cost_request
+    username: priceflow
+    password: priceflow
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
