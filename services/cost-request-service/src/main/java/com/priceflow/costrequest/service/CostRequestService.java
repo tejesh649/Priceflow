@@ -3,6 +3,8 @@ package com.priceflow.costrequest.service;
 import com.priceflow.costrequest.dto.*;
 import com.priceflow.costrequest.entity.CostRequest;
 import com.priceflow.costrequest.enums.CostRequestStatus;
+import com.priceflow.costrequest.event.CostRequestEventMapper;
+import com.priceflow.costrequest.event.CostRequestEventPublisher;
 import com.priceflow.costrequest.exception.CostRequestNotFoundException;
 import com.priceflow.costrequest.exception.InvalidCostRequestStatusException;
 import com.priceflow.costrequest.repository.CostRequestRepository;
@@ -26,6 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 public class CostRequestService {
 
     private final CostRequestRepository costRequestRepository;
+    private final CostRequestEventMapper costRequestEventMapper;
+    private final CostRequestEventPublisher costRequestEventPublisher;
 
     public Mono<CostRequestResponse> createCostRequest(
             CostRequestCreateRequest request) {
@@ -183,7 +187,16 @@ public class CostRequestService {
                             costRequest.getEffectiveDate()
                     );
 
-                    return costRequestRepository.save(costRequest);
+                    return costRequestRepository.save(costRequest)
+                            .flatMap(savedCostRequest -> {
+
+                                var event =
+                                        costRequestEventMapper.toApprovedEvent(savedCostRequest);
+
+                                return costRequestEventPublisher
+                                        .publishApproved(event)
+                                        .thenReturn(savedCostRequest);
+                            });
                 })
                 .doOnSuccess(saved ->
                         log.info(
