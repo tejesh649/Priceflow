@@ -28,9 +28,8 @@ public class CostRequestEventMapper {
                 .setRequestId(costRequest.getRequestId())
                 .setVendorId(costRequest.getVendorId())
                 .setItemNumber(costRequest.getItemNumber())
-                .setApprovedCost(
-                        toAvroDecimal(costRequest.getProposedCost())
-                )                .setEffectiveDate(costRequest.getEffectiveDate())
+                .setApprovedCost(costRequest.getProposedCost())
+                .setEffectiveDate(costRequest.getEffectiveDate())
                 .setApprovedBy(costRequest.getApprovedBy())
                 .setApprovedAt(costRequest.getApprovedAt())
                 .build();
