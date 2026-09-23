@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: pricing-service
+
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/priceflow_pricing
+    username: priceflow
+    password: priceflow
+
+server:
+  port: 8081
+
+priceflow:
+  pricing:
+    activation:
+      cron: "0 5 0 * * *"
+      zone: "America/New_York"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
