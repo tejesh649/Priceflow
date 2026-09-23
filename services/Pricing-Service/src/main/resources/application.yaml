@@ -10,6 +10,12 @@ spring:
 server:
   port: 8081
 
+priceflow:
+  pricing:
+    activation:
+      cron: "0 5 0 * * *"
+      zone: "America/New_York"
+
 management:
   endpoints:
     web:
