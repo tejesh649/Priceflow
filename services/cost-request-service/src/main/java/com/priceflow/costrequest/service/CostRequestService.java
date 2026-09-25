@@ -247,8 +247,16 @@ public class CostRequestService {
                             request.approverId()
                     );
 
-                    return costRequestRepository.save(costRequest);
-                })
+                    return costRequestRepository.save(costRequest)
+                            .flatMap(savedCostRequest -> {
+
+                                var event =
+                                        costRequestEventMapper.toRejectedEvent(savedCostRequest);
+
+                                return costRequestEventPublisher
+                                        .publishRejected(event)
+                                        .thenReturn(savedCostRequest);
+                            });                })
                 .doOnSuccess(saved ->
                         log.info(
                                 "Successfully rejected cost request requestId={}",

@@ -2,6 +2,7 @@ package com.priceflow.costrequest.event;
 
 import com.priceflow.costrequest.entity.CostRequest;
 import com.priceflow.events.costrequest.CostRequestApprovedEvent;
+import com.priceflow.events.costrequest.CostRequestRejectedEvent;
 import org.springframework.stereotype.Component;
 
 import org.apache.avro.Conversions;
@@ -51,5 +52,23 @@ public class CostRequestEventMapper {
                         decimalSchema,
                         decimalType
                 );
+    }
+
+    public CostRequestRejectedEvent toRejectedEvent(
+            CostRequest costRequest) {
+
+        return CostRequestRejectedEvent.newBuilder()
+                .setEventId(UUID.randomUUID().toString())
+                .setEventType("COST_REQUEST_REJECTED")
+                .setEventVersion(1)
+                .setOccurredAt(Instant.now())
+                .setRequestId(costRequest.getRequestId())
+                .setVendorId(costRequest.getVendorId())
+                .setItemNumber(costRequest.getItemNumber())
+                .setProposedCost(costRequest.getProposedCost())
+                .setRejectedBy(costRequest.getRejectedBy())
+                .setRejectedAt(costRequest.getRejectedAt())
+                .setRejectionReason(costRequest.getRejectionReason())
+                .build();
     }
 }
