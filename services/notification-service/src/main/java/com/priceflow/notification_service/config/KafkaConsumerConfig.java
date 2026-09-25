@@ -1,7 +1,7 @@
 package com.priceflow.notification_service.config;
 
-import com.priceflow.events.costrequest.CostRequestApprovedEvent;
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
+import org.apache.avro.specific.SpecificRecord;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.context.annotation.Bean;
@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.DefaultErrorHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +18,7 @@ import java.util.Map;
 public class KafkaConsumerConfig {
 
     @Bean
-    public ConsumerFactory<String, CostRequestApprovedEvent> consumerFactory() {
+    public ConsumerFactory<String, SpecificRecord> consumerFactory() {
 
         Map<String, Object> config = new HashMap<>();
 
@@ -55,14 +56,17 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, CostRequestApprovedEvent>
+    public ConcurrentKafkaListenerContainerFactory<String, SpecificRecord>
     kafkaListenerContainerFactory(
-            ConsumerFactory<String, CostRequestApprovedEvent> consumerFactory) {
+            ConsumerFactory<String, SpecificRecord> consumerFactory,
+            DefaultErrorHandler kafkaErrorHandler) {
 
         var factory =
-                new ConcurrentKafkaListenerContainerFactory<String, CostRequestApprovedEvent>();
+                new ConcurrentKafkaListenerContainerFactory<String, SpecificRecord>();
 
         factory.setConsumerFactory(consumerFactory);
+
+        factory.setCommonErrorHandler(kafkaErrorHandler);
 
         return factory;
     }
