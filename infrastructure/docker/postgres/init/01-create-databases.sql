@@ -1,0 +1,3 @@
+CREATE DATABASE priceflow_pricing;
+CREATE DATABASE priceflow_notification;
+CREATE DATABASE priceflow_registry;

@@ -78,7 +78,7 @@ public class EmailService {
         );
     }
 
-    public void sendCostRequestApprovedEmail(
+    public String sendCostRequestApprovedEmail(
             CostRequestApprovedEvent event) throws MessagingException {
 
         DateTimeFormatter dateFormatter =
@@ -130,14 +130,15 @@ public class EmailService {
         mailSender.send(message);
 
         log.info(
-                "Cost request approval email sent successfully. " +
-                        "requestId={}, recipient={}",
+                "Cost request approval email sent successfully. requestId={}, recipient={}",
                 event.getRequestId(),
                 testRecipient
         );
+
+        return testRecipient;
     }
 
-    public void sendCostRequestRejectedEmail(
+    public String sendCostRequestRejectedEmail(
             CostRequestRejectedEvent event) throws MessagingException {
 
         DateTimeFormatter dateTimeFormatter =
@@ -189,10 +190,11 @@ public class EmailService {
         mailSender.send(message);
 
         log.info(
-                "Cost request rejection email sent successfully. " +
-                        "requestId={}, recipient={}",
+                "Cost request rejection email sent successfully. requestId={}, recipient={}",
                 event.getRequestId(),
                 testRecipient
         );
+
+        return testRecipient;
     }
 }

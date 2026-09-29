@@ -2,6 +2,15 @@ spring:
   application:
     name: notification-service
 
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/priceflow_notification
+    username: priceflow
+    password: priceflow
+
+  logging:
+    level:
+      org.springframework.r2dbc.core: DEBUG
+
   mail:
     host: smtp.gmail.com
     port: 587

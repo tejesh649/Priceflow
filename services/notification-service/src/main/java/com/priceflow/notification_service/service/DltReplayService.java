@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecord;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -82,27 +83,71 @@ public class DltReplayService {
 
             consumer.subscribe(List.of(SOURCE_TOPIC));
 
-            var records = consumer.poll(Duration.ofSeconds(5));
+            // First poll establishes partition assignment.
+            consumer.poll(Duration.ofSeconds(2));
 
-            for (var record : records) {
+            var partitions = consumer.assignment();
 
-                log.info(
-                        "Replaying DLT record: partition={}, offset={}, key={}, eventType={}",
-                        record.partition(),
-                        record.offset(),
-                        record.key(),
-                        record.value().getClass().getSimpleName()
-                );
+            if (partitions.isEmpty()) {
+                log.info("No DLT partitions assigned.");
+                return 0;
+            }
 
-                kafkaTemplate
-                        .send(
-                                TARGET_TOPIC,
-                                record.key(),
-                                record.value()
-                        )
-                        .join();
+            // Snapshot where each DLT partition ends when replay begins.
+            var endOffsets = consumer.endOffsets(partitions);
 
-                replayedCount++;
+            log.info(
+                    "Starting DLT replay. partitions={}, endOffsets={}",
+                    partitions,
+                    endOffsets
+            );
+
+            boolean replayComplete = false;
+
+            while (!replayComplete) {
+
+                var records = consumer.poll(Duration.ofSeconds(2));
+
+                for (var record : records) {
+
+                    var topicPartition =
+                            new TopicPartition(
+                                    record.topic(),
+                                    record.partition()
+                            );
+
+                    long snapshotEndOffset =
+                            endOffsets.get(topicPartition);
+
+                    // Do not process records that arrived after our snapshot.
+                    if (record.offset() >= snapshotEndOffset) {
+                        continue;
+                    }
+
+                    log.info(
+                            "Replaying DLT record: partition={}, offset={}, key={}, eventType={}",
+                            record.partition(),
+                            record.offset(),
+                            record.key(),
+                            record.value().getClass().getSimpleName()
+                    );
+
+                    kafkaTemplate
+                            .send(
+                                    TARGET_TOPIC,
+                                    record.key(),
+                                    record.value()
+                            )
+                            .join();
+
+                    replayedCount++;
+                }
+
+                replayComplete = partitions.stream()
+                        .allMatch(partition ->
+                                consumer.position(partition)
+                                        >= endOffsets.get(partition)
+                        );
             }
 
             if (replayedCount > 0) {
