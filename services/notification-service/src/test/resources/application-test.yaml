@@ -1,0 +1,8 @@
+priceflow:
+  notification:
+    test-recipient: test@priceflow.local
+
+spring:
+  mail:
+    username: test@priceflow.local
+    password: test-password
