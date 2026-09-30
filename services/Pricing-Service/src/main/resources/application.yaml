@@ -3,14 +3,20 @@ spring:
     name: pricing-service
 
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/priceflow_pricing
-    username: priceflow
-    password: priceflow
+    url: ${DB_URL:r2dbc:postgresql://localhost:5432/priceflow_pricing}
+    username: ${DB_USERNAME:priceflow}
+    password: ${DB_PASSWORD:priceflow}
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
 
 server:
   port: 8081
 
 priceflow:
+  kafka:
+    schema-registry-url: ${SCHEMA_REGISTRY_URL:http://localhost:8085/apis/ccompat/v7}
+
   pricing:
     activation:
       cron: "0 5 0 * * *"

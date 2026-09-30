@@ -3,6 +3,7 @@ package com.priceflow.notification_service.config;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -15,6 +16,17 @@ import java.util.Map;
 @Configuration
 public class KafkaProducerConfig {
 
+    private final String bootstrapServers;
+    private final String schemaRegistryUrl;
+
+    public KafkaProducerConfig(
+            @Value("${spring.kafka.bootstrap-servers}") String bootstrapServers,
+            @Value("${priceflow.kafka.schema-registry-url}") String schemaRegistryUrl) {
+
+        this.bootstrapServers = bootstrapServers;
+        this.schemaRegistryUrl = schemaRegistryUrl;
+    }
+
     @Bean
     public ProducerFactory<String, Object> producerFactory() {
 
@@ -22,7 +34,7 @@ public class KafkaProducerConfig {
 
         config.put(
                 ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
-                "localhost:9092"
+                bootstrapServers
         );
 
         config.put(
@@ -37,7 +49,7 @@ public class KafkaProducerConfig {
 
         config.put(
                 "schema.registry.url",
-                "http://localhost:8085/apis/ccompat/v7"
+                schemaRegistryUrl
         );
 
         return new DefaultKafkaProducerFactory<>(config);

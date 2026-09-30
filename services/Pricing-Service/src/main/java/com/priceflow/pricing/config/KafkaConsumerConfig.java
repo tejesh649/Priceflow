@@ -4,6 +4,7 @@ import com.priceflow.events.costrequest.CostRequestApprovedEvent;
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -18,6 +19,16 @@ import java.util.Map;
 @EnableKafka
 public class KafkaConsumerConfig {
 
+    private final String bootstrapServers;
+    private final String schemaRegistryUrl;
+
+    public KafkaConsumerConfig(
+            @Value("${spring.kafka.bootstrap-servers}") String bootstrapServers,
+            @Value("${priceflow.kafka.schema-registry-url}") String schemaRegistryUrl) {
+        this.bootstrapServers = bootstrapServers;
+        this.schemaRegistryUrl = schemaRegistryUrl;
+    }
+
     @Bean
     public ConsumerFactory<String, CostRequestApprovedEvent> consumerFactory() {
 
@@ -25,7 +36,7 @@ public class KafkaConsumerConfig {
 
         config.put(
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
-                "localhost:9092"
+                bootstrapServers
         );
 
         config.put(
@@ -45,19 +56,20 @@ public class KafkaConsumerConfig {
 
         config.put(
                 "schema.registry.url",
-                "http://localhost:8085/apis/ccompat/v7"
+                schemaRegistryUrl
         );
 
         config.put(
                 "specific.avro.reader",
                 true
         );
+
         config.put(
                 "avro.use.logical.type.converters",
                 false
         );
 
-        return new DefaultKafkaConsumerFactory<String, CostRequestApprovedEvent>(config);
+        return new DefaultKafkaConsumerFactory<>(config);
     }
 
     @Bean

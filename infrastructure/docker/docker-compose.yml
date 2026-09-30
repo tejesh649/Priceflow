@@ -129,10 +129,121 @@ services:
     environment:
       KAFKA_CLUSTERS_0_NAME: priceflow
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: priceflow-kafka:29092
-
       KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://priceflow-schema-registry:8080/apis/ccompat/v7
 
     depends_on:
+      kafka:
+        condition: service_healthy
+      schema-registry:
+        condition: service_started
+
+    networks:
+      - priceflow-network
+
+    restart: unless-stopped
+
+
+  # =========================================================
+  # Cost Request Service
+  # =========================================================
+  cost-request-service:
+    build:
+      context: ../../services/cost-request-service
+      dockerfile: Dockerfile
+
+    image: priceflow/cost-request-service:local
+    container_name: priceflow-cost-request-service
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      DB_URL: r2dbc:postgresql://priceflow-postgres:5432/priceflow_cost_request
+      DB_USERNAME: priceflow
+      DB_PASSWORD: priceflow
+
+      KAFKA_BOOTSTRAP_SERVERS: priceflow-kafka:29092
+      SCHEMA_REGISTRY_URL: http://priceflow-schema-registry:8080/apis/ccompat/v7
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      schema-registry:
+        condition: service_started
+
+    networks:
+      - priceflow-network
+
+    restart: unless-stopped
+
+
+  # =========================================================
+  # Pricing Service
+  # =========================================================
+  pricing-service:
+    build:
+      context: ../../services/pricing-service
+      dockerfile: Dockerfile
+
+    image: priceflow/pricing-service:local
+    container_name: priceflow-pricing-service
+
+    ports:
+      - "8081:8081"
+
+    environment:
+      DB_URL: r2dbc:postgresql://priceflow-postgres:5432/priceflow_pricing
+      DB_USERNAME: priceflow
+      DB_PASSWORD: priceflow
+
+      KAFKA_BOOTSTRAP_SERVERS: priceflow-kafka:29092
+      SCHEMA_REGISTRY_URL: http://priceflow-schema-registry:8080/apis/ccompat/v7
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      schema-registry:
+        condition: service_started
+
+    networks:
+      - priceflow-network
+
+    restart: unless-stopped
+
+
+  # =========================================================
+  # Notification Service
+  # =========================================================
+  notification-service:
+    build:
+      context: ../../services/notification-service
+      dockerfile: Dockerfile
+
+    image: priceflow/notification-service:local
+    container_name: priceflow-notification-service
+
+    ports:
+      - "8082:8082"
+
+    environment:
+      DB_URL: r2dbc:postgresql://priceflow-postgres:5432/priceflow_notification
+      DB_USERNAME: priceflow
+      DB_PASSWORD: priceflow
+
+      KAFKA_BOOTSTRAP_SERVERS: priceflow-kafka:29092
+      SCHEMA_REGISTRY_URL: http://priceflow-schema-registry:8080/apis/ccompat/v7
+
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      NOTIFICATION_TEST_RECIPIENT: ${NOTIFICATION_TEST_RECIPIENT}
+
+    depends_on:
+      postgres:
+        condition: service_healthy
       kafka:
         condition: service_healthy
       schema-registry:

@@ -4,6 +4,7 @@ import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 import org.apache.avro.specific.SpecificRecord;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
@@ -17,6 +18,17 @@ import java.util.Map;
 @Configuration
 public class KafkaConsumerConfig {
 
+    private final String bootstrapServers;
+    private final String schemaRegistryUrl;
+
+    public KafkaConsumerConfig(
+            @Value("${spring.kafka.bootstrap-servers}") String bootstrapServers,
+            @Value("${priceflow.kafka.schema-registry-url}") String schemaRegistryUrl) {
+
+        this.bootstrapServers = bootstrapServers;
+        this.schemaRegistryUrl = schemaRegistryUrl;
+    }
+
     @Bean
     public ConsumerFactory<String, SpecificRecord> consumerFactory() {
 
@@ -24,7 +36,7 @@ public class KafkaConsumerConfig {
 
         config.put(
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
-                "localhost:9092"
+                bootstrapServers
         );
 
         config.put(
@@ -44,7 +56,7 @@ public class KafkaConsumerConfig {
 
         config.put(
                 "schema.registry.url",
-                "http://localhost:8085/apis/ccompat/v7"
+                schemaRegistryUrl
         );
 
         config.put(
@@ -65,7 +77,6 @@ public class KafkaConsumerConfig {
                 new ConcurrentKafkaListenerContainerFactory<String, SpecificRecord>();
 
         factory.setConsumerFactory(consumerFactory);
-
         factory.setCommonErrorHandler(kafkaErrorHandler);
 
         return factory;

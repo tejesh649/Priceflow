@@ -3,19 +3,22 @@ spring:
     name: cost-request-service
 
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/priceflow_cost_request
-    username: priceflow
-    password: priceflow
+    url: ${DB_URL:r2dbc:postgresql://localhost:5432/priceflow_cost_request}
+    username: ${DB_USERNAME:priceflow}
+    password: ${DB_PASSWORD:priceflow}
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: io.apicurio.registry.serde.avro.AvroKafkaSerializer
 
       properties:
-        apicurio.registry.url: http://localhost:8085/apis/registry/v3
+        apicurio.registry.url: ${SCHEMA_REGISTRY_URL:http://localhost:8085/apis/registry/v3}
         apicurio.registry.auto-register: true
+priceflow:
+  kafka:
+    schema-registry-url: ${SCHEMA_REGISTRY_URL:http://localhost:8085/apis/ccompat/v7}
 
 management:
   endpoints:
