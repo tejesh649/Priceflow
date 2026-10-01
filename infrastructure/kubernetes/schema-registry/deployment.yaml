@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: schema-registry
+  namespace: priceflow
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: schema-registry
+
+  template:
+    metadata:
+      labels:
+        app: schema-registry
+
+    spec:
+      containers:
+        - name: schema-registry
+          image: apicurio/apicurio-registry:3.1.6
+
+          ports:
+            - name: http
+              containerPort: 8080
+
+          env:
+            - name: APICURIO_STORAGE_KIND
+              value: sql
+
+            - name: APICURIO_STORAGE_SQL_KIND
+              value: postgresql
+
+            - name: APICURIO_DATASOURCE_URL
+              value: jdbc:postgresql://postgres:5432/priceflow_registry
+
+            - name: APICURIO_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_USER
+
+            - name: APICURIO_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: schema-registry
+  namespace: priceflow
+spec:
+  selector:
+    app: schema-registry
+
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+
+  type: ClusterIP

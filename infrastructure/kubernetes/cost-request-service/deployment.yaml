@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cost-request-service
+  namespace: priceflow
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: cost-request-service
+
+  template:
+    metadata:
+      labels:
+        app: cost-request-service
+
+    spec:
+      containers:
+        - name: cost-request-service
+          image: ghcr.io/tejesh649/priceflow-cost-request-service@sha256:79aa16a719be6c836ff3dc986401224facd919ed4ad4e1516c5a8e32dec48f40
+
+          ports:
+            - name: http
+              containerPort: 8080
+
+          env:
+            - name: DB_URL
+              value: r2dbc:postgresql://postgres:5432/priceflow_cost_request
+
+            - name: FLYWAY_DB_URL
+              value: jdbc:postgresql://postgres:5432/priceflow_cost_request
+
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_USER
+
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: kafka:29092
+
+            - name: SCHEMA_REGISTRY_URL
+              value: http://schema-registry:8080/apis/ccompat/v7
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cost-request-service
+  namespace: priceflow
+spec:
+  selector:
+    app: cost-request-service
+
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+
+  type: ClusterIP
