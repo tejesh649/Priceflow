@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: cost-request-service
-          image: ghcr.io/tejesh649/priceflow-cost-request-service@sha256:79aa16a719be6c836ff3dc986401224facd919ed4ad4e1516c5a8e32dec48f40
+          image: ghcr.io/tejesh649/priceflow-cost-request-service@sha256:a186f1cf28451659b0af16f0657ea9af974837303323585d02dd90677ffb17a2
 
           ports:
             - name: http
