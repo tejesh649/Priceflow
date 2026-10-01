@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init
+  namespace: priceflow
+data:
+  init-databases.sql: |
+    CREATE DATABASE priceflow_cost_request;
+    CREATE DATABASE priceflow_pricing;
+    CREATE DATABASE priceflow_notification;
+    CREATE DATABASE priceflow_registry;

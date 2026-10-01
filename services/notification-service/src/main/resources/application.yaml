@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: notification-service
+
+  r2dbc:
+    url: ${DB_URL:r2dbc:postgresql://localhost:5432/priceflow_notification}
+    username: ${DB_USERNAME:priceflow}
+    password: ${DB_PASSWORD:priceflow}
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
+  logging:
+    level:
+      org.springframework.r2dbc.core: DEBUG
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+server:
+  port: 8082
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+priceflow:
+  kafka:
+    schema-registry-url: ${SCHEMA_REGISTRY_URL:http://localhost:8085/apis/ccompat/v7}
+
+  notification:
+    test-recipient: ${NOTIFICATION_TEST_RECIPIENT}

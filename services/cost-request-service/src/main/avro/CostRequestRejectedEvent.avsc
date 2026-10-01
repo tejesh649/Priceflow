@@ -1,0 +1,63 @@
+{
+  "type": "record",
+  "name": "CostRequestRejectedEvent",
+  "namespace": "com.priceflow.events.costrequest",
+  "fields": [
+    {
+      "name": "eventId",
+      "type": "string"
+    },
+    {
+      "name": "eventType",
+      "type": "string"
+    },
+    {
+      "name": "eventVersion",
+      "type": "int",
+      "default": 1
+    },
+    {
+      "name": "occurredAt",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "requestId",
+      "type": "string"
+    },
+    {
+      "name": "vendorId",
+      "type": "string"
+    },
+    {
+      "name": "itemNumber",
+      "type": "long"
+    },
+    {
+      "name": "proposedCost",
+      "type": {
+        "type": "bytes",
+        "logicalType": "decimal",
+        "precision": 12,
+        "scale": 2
+      }
+    },
+    {
+      "name": "rejectedBy",
+      "type": "string"
+    },
+    {
+      "name": "rejectedAt",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "rejectionReason",
+      "type": "string"
+    }
+  ]
+}
