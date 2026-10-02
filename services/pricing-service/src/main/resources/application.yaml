@@ -7,6 +7,14 @@ spring:
     username: ${DB_USERNAME:priceflow}
     password: ${DB_PASSWORD:priceflow}
 
+  flyway:
+    enabled: true
+    url: ${FLYWAY_DB_URL:jdbc:postgresql://localhost:5432/priceflow_pricing}
+    user: ${DB_USERNAME:priceflow}
+    password: ${DB_PASSWORD:priceflow}
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
 
