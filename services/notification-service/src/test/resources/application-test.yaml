@@ -3,6 +3,9 @@ priceflow:
     test-recipient: test@priceflow.local
 
 spring:
+  flyway:
+    enabled: false
+
   mail:
     username: test@priceflow.local
     password: test-password
