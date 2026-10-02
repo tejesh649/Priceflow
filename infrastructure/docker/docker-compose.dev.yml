@@ -1,0 +1,175 @@
+services:
+
+  postgres:
+    image: postgres:16
+    container_name: priceflow-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: priceflow_cost_request
+    volumes:
+      - priceflow-postgres-data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d priceflow_cost_request"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - priceflow-network
+    restart: unless-stopped
+
+
+  kafka:
+    image: apache/kafka:4.1.1
+    container_name: priceflow-kafka
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+
+      KAFKA_LISTENERS: CONTROLLER://:29093,PLAINTEXT://:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://priceflow-kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@priceflow-kafka:29093
+
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_NUM_PARTITIONS: 3
+
+    volumes:
+      - priceflow-kafka-data:/var/lib/kafka/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:29092 --list >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
+
+    networks:
+      - priceflow-network
+    restart: unless-stopped
+
+
+  schema-registry:
+    image: apicurio/apicurio-registry:3.1.6
+    container_name: priceflow-schema-registry
+
+    environment:
+      APICURIO_STORAGE_KIND: sql
+      APICURIO_STORAGE_SQL_KIND: postgresql
+      APICURIO_DATASOURCE_URL: jdbc:postgresql://priceflow-postgres:5432/priceflow_registry
+      APICURIO_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      APICURIO_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    networks:
+      - priceflow-network
+    restart: unless-stopped
+
+
+  cost-request-service:
+    image: ghcr.io/tejesh649/priceflow-cost-request-service:latest
+    container_name: priceflow-cost-request-service
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      DB_URL: r2dbc:postgresql://priceflow-postgres:5432/priceflow_cost_request
+      FLYWAY_DB_URL: jdbc:postgresql://priceflow-postgres:5432/priceflow_cost_request
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+
+      KAFKA_BOOTSTRAP_SERVERS: priceflow-kafka:29092
+      SCHEMA_REGISTRY_URL: http://priceflow-schema-registry:8080/apis/ccompat/v7
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      schema-registry:
+        condition: service_started
+
+    networks:
+      - priceflow-network
+    restart: unless-stopped
+
+
+  pricing-service:
+    image: ghcr.io/tejesh649/priceflow-pricing-service:latest
+    container_name: priceflow-pricing-service
+
+    environment:
+      DB_URL: r2dbc:postgresql://priceflow-postgres:5432/priceflow_pricing
+      FLYWAY_DB_URL: jdbc:postgresql://priceflow-postgres:5432/priceflow_pricing
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+
+      KAFKA_BOOTSTRAP_SERVERS: priceflow-kafka:29092
+      SCHEMA_REGISTRY_URL: http://priceflow-schema-registry:8080/apis/ccompat/v7
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      schema-registry:
+        condition: service_started
+
+    networks:
+      - priceflow-network
+    restart: unless-stopped
+
+
+  notification-service:
+    image: ghcr.io/tejesh649/priceflow-notification-service:latest
+    container_name: priceflow-notification-service
+
+    environment:
+      DB_URL: r2dbc:postgresql://priceflow-postgres:5432/priceflow_notification
+      FLYWAY_DB_URL: jdbc:postgresql://priceflow-postgres:5432/priceflow_notification
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+
+      KAFKA_BOOTSTRAP_SERVERS: priceflow-kafka:29092
+      SCHEMA_REGISTRY_URL: http://priceflow-schema-registry:8080/apis/ccompat/v7
+
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      NOTIFICATION_TEST_RECIPIENT: ${NOTIFICATION_TEST_RECIPIENT}
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      schema-registry:
+        condition: service_started
+
+    networks:
+      - priceflow-network
+    restart: unless-stopped
+
+
+volumes:
+  priceflow-postgres-data:
+    name: priceflow-dev-postgres-data
+
+  priceflow-kafka-data:
+    name: priceflow-dev-kafka-data
+
+
+networks:
+  priceflow-network:
+    name: priceflow-dev-network
