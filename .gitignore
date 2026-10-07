@@ -18,4 +18,18 @@ target/
 .env
 .env.*
 !.env.example
+
+# Docker backups
 infrastructure/docker/backups/
+
+# Brag video outputs
+/brag-output/
+/brag-output-*/
+
+# Local AI agent skills and generated assets
+/.agents/
+/skills-lock.json
+
+# Node.js / Hyperframes
+node_modules/
+.thumbnails/
