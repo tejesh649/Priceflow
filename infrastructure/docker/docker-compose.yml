@@ -159,6 +159,7 @@ services:
 
     environment:
       DB_URL: r2dbc:postgresql://priceflow-postgres:5432/priceflow_cost_request
+      FLYWAY_DB_URL: jdbc:postgresql://priceflow-postgres:5432/priceflow_cost_request
       DB_USERNAME: priceflow
       DB_PASSWORD: priceflow
 
@@ -195,6 +196,7 @@ services:
 
     environment:
       DB_URL: r2dbc:postgresql://priceflow-postgres:5432/priceflow_pricing
+      FLYWAY_DB_URL: jdbc:postgresql://priceflow-postgres:5432/priceflow_pricing
       DB_USERNAME: priceflow
       DB_PASSWORD: priceflow
 
@@ -231,6 +233,7 @@ services:
 
     environment:
       DB_URL: r2dbc:postgresql://priceflow-postgres:5432/priceflow_notification
+      FLYWAY_DB_URL: jdbc:postgresql://priceflow-postgres:5432/priceflow_notification
       DB_USERNAME: priceflow
       DB_PASSWORD: priceflow
 
